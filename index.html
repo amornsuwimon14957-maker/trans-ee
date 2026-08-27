@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Factory Electrical Sizing Calculator</title>
+    <title>Factory Electrical Calculator / ระบบคำนวณไฟฟ้าโรงงาน</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -17,13 +17,16 @@
 
     <div class="max-w-7xl mx-auto space-y-6">
         <!-- Header -->
-        <header class="flex justify-between items-center border-b border-slate-700 pb-4">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-700 pb-4 gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-amber-400"><i class="fa-solid font-bolt me-2"></i>ระบบคำนวณไฟฟ้าโรงงาน (Factory Electrical Calculator)</h1>
-                <p class="text-sm text-slate-400">คำนวณขนาดหม้อแปลง, Main CB และขนาดสายไฟเมนเบื้องต้น</p>
+                <h1 class="text-2xl font-bold text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-bolt"></i> 
+                    ระบบคำนวณไฟฟ้าโรงงาน (Factory Electrical Calculator)
+                </h1>
+                <p class="text-sm text-slate-400">คำนวณขนาดหม้อแปลง, Main CB, สายเมน และผัง Single Line Diagram ตู้ MDB</p>
             </div>
-            <span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-3 py-1 rounded-full text-xs font-semibold">
-                อ้างอิงมาตรฐาน วสท. / 3-Phase 400V
+            <span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-3 py-1.5 rounded-full text-xs font-semibold">
+                อ้างอิงมาตรฐาน วสท. / Standard EIT (3-Phase 380V / 220V)
             </span>
         </header>
 
@@ -34,16 +37,21 @@
                 <!-- Parameters Card -->
                 <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-lg">
                     <h2 class="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-sliders text-amber-400"></i> ตั้งค่าพารามิเตอร์ระบบ
+                        <i class="fa-solid fa-sliders text-amber-400"></i> 
+                        ตั้งค่าพารามิเตอร์ระบบ / System Parameters
                     </h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">เผื่อการเติบโตในอนาคต (Expansion Factor %)</label>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">
+                                เผื่อการเติบโตในอนาคต / Expansion Factor (%)
+                            </label>
                             <input type="number" id="expansionFactor" value="20" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-amber-400 font-semibold focus:outline-none focus:border-amber-400">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">แรงดันระบบ (System Voltage)</label>
-                            <input type="text" value="3-Phase 400V / 230V" disabled class="w-full bg-slate-900/50 border border-slate-800 rounded-lg px-3 py-2 text-slate-500 cursor-not-allowed">
+                            <label class="block text-xs font-medium text-slate-400 mb-1">
+                                แรงดันระบบ / System Voltage
+                            </label>
+                            <input type="text" value="3-Phase 380V / 220V" disabled class="w-full bg-slate-900/50 border border-slate-800 rounded-lg px-3 py-2 text-slate-400 font-semibold cursor-not-allowed">
                         </div>
                     </div>
                 </div>
@@ -52,10 +60,11 @@
                 <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-lg space-y-4">
                     <div class="flex justify-between items-center">
                         <h2 class="text-lg font-semibold text-slate-200 flex items-center gap-2">
-                            <i class="fa-solid fa-list-check text-amber-400"></i> รายการโหลดไฟฟ้า (Load Schedule)
+                            <i class="fa-solid fa-list-check text-amber-400"></i> 
+                            รายการโหลดไฟฟ้า / Load Schedule
                         </h2>
                         <button onclick="addLoadRow()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-sm transition flex items-center gap-1">
-                            <i class="fa-solid fa-plus"></i> เพิ่มรายการ
+                            <i class="fa-solid fa-plus"></i> เพิ่มรายการ / Add Load
                         </button>
                     </div>
 
@@ -63,12 +72,12 @@
                         <table class="w-full text-left text-sm text-slate-300">
                             <thead class="bg-slate-900 text-slate-400 uppercase text-xs">
                                 <tr>
-                                    <th class="p-3">ชื่อโหลด</th>
-                                    <th class="p-3 w-28">ขนาด (kW)</th>
+                                    <th class="p-3">ชื่อโหลด / Load Name</th>
+                                    <th class="p-3 w-28">ขนาด / Rating (kW)</th>
                                     <th class="p-3 w-24">PF</th>
                                     <th class="p-3 w-24">Eff (%)</th>
                                     <th class="p-3 w-24">DF (%)</th>
-                                    <th class="p-3 w-12 text-center">ลบ</th>
+                                    <th class="p-3 w-12 text-center">ลบ / Del</th>
                                 </tr>
                             </thead>
                             <tbody id="loadTableBody" class="divide-y divide-slate-700">
@@ -83,50 +92,51 @@
             <div class="space-y-6">
                 <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-lg space-y-6 sticky top-6">
                     <h2 class="text-lg font-semibold text-slate-200 border-b border-slate-700 pb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-calculator text-amber-400"></i> ผลการคำนวณสรุป
+                        <i class="fa-solid fa-calculator text-amber-400"></i> 
+                        ผลการคำนวณสรุป / Calculation Summary
                     </h2>
 
                     <!-- Load Totals -->
                     <div class="space-y-2 text-sm border-b border-slate-700/60 pb-4">
                         <div class="flex justify-between text-slate-400">
-                            <span>Total Connected Load:</span>
+                            <span>โหลดติดตั้งรวม / Total Connected Load:</span>
                             <span id="totalConnectedKW" class="font-mono text-slate-200">0.00 kW</span>
                         </div>
                         <div class="flex justify-between text-slate-400">
-                            <span>Total Demand Load:</span>
+                            <span>โหลดใช้งานจริงรวม / Total Demand Load:</span>
                             <span id="totalDemandKW" class="font-mono text-slate-200">0.00 kW</span>
                         </div>
                         <div class="flex justify-between text-slate-400">
-                            <span>Total Demand kVA:</span>
+                            <span>กิโลโวลต์แอมแปร์รวม / Total Demand kVA:</span>
                             <span id="totalDemandKVA" class="font-mono text-slate-200">0.00 kVA</span>
                         </div>
                         <div class="flex justify-between text-amber-400 font-semibold pt-1">
-                            <span>Design kVA (เผื่อเติบโตแล้ว):</span>
+                            <span>ขนาดออกแบบ / Design kVA (+Expansion):</span>
                             <span id="designKVA" class="font-mono">0.00 kVA</span>
                         </div>
                     </div>
 
                     <!-- Recommended Transformer -->
                     <div class="bg-slate-900/80 border border-slate-700 p-4 rounded-lg space-y-1">
-                        <span class="text-xs text-slate-400 uppercase tracking-wider">ขนาดหม้อแปลงที่แนะนำ</span>
+                        <span class="text-xs text-slate-400 uppercase tracking-wider">ขนาดหม้อแปลงแนะนำ / Recommended Transformer</span>
                         <div id="txSize" class="text-2xl font-bold text-amber-400 font-mono">-- kVA</div>
-                        <p class="text-xs text-slate-500">เลือกขนาดมาตรฐานถัดไปในตลาด</p>
+                        <p class="text-xs text-slate-500">มาตรฐานถัดไปในตลาด / Standard Market Size</p>
                     </div>
 
                     <!-- Recommended Breaker & Cable -->
                     <div class="space-y-3">
                         <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700/50">
-                            <span class="text-xs text-slate-400 block mb-1">ขนาดเมนเบรกเกอร์ (Main CB)</span>
+                            <span class="text-xs text-slate-400 block mb-1">เมนเบรกเกอร์ / Main Circuit Breaker (Main CB)</span>
                             <div id="mainCB" class="text-lg font-semibold text-slate-200 font-mono">-- A</div>
                         </div>
 
                         <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700/50">
-                            <span class="text-xs text-slate-400 block mb-1">ขนาดสายเมนไฟฟ้าแรงต่ำ (XLPE In Conduit/Air)</span>
+                            <span class="text-xs text-slate-400 block mb-1">สายเมนไฟฟ้าแรงต่ำ / Low Voltage Main Feeder (XLPE)</span>
                             <div id="cableSize" class="text-sm font-semibold text-emerald-400 font-mono">--</div>
                         </div>
 
                         <div class="bg-slate-900/50 p-3 rounded-lg border border-slate-700/50">
-                            <span class="text-xs text-slate-400 block mb-1">ขนาดสายดิน (Grounding Conductor)</span>
+                            <span class="text-xs text-slate-400 block mb-1">สายดิน / Grounding Conductor Size</span>
                             <div id="groundSize" class="text-sm font-semibold text-emerald-400 font-mono">--</div>
                         </div>
                     </div>
@@ -134,11 +144,49 @@
             </div>
 
         </div>
+
+        <!-- Bottom Panel: Single Line Diagram (MDB) -->
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-5 shadow-lg space-y-4">
+            <h2 class="text-lg font-semibold text-slate-200 flex items-center gap-2 border-b border-slate-700 pb-3">
+                <i class="fa-solid fa-diagram-project text-amber-400"></i> 
+                ผังเดี่ยวระบบไฟฟ้า ตู้ MDB / Single Line Diagram (MDB Cabinet)
+            </h2>
+            
+            <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 flex flex-col items-center overflow-x-auto">
+                <!-- Transformer Block -->
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 rounded-full border-4 border-amber-400 flex items-center justify-center font-bold text-amber-400 text-xs text-center p-1 bg-slate-900 shadow-md">
+                        <span id="sldTx">-- kVA</span>
+                    </div>
+                    <span class="text-xs text-slate-400 mt-1">Transformer 22kV / 380V</span>
+                </div>
+
+                <!-- Main Line -->
+                <div class="w-0.5 h-8 bg-amber-400"></div>
+
+                <!-- Main CB Box -->
+                <div class="border-2 border-slate-400 bg-slate-900 px-6 py-2 rounded-md text-center shadow-md">
+                    <span class="text-xs text-slate-400 block">Main Breaker (MDB)</span>
+                    <span id="sldMainCB" class="text-amber-400 font-bold font-mono">-- A</span>
+                    <span id="sldMainCable" class="text-[10px] text-emerald-400 block font-mono">--</span>
+                </div>
+
+                <!-- Busbar Line -->
+                <div class="w-0.5 h-6 bg-slate-400"></div>
+                <div class="w-full max-w-4xl h-1.5 bg-amber-400 rounded-full my-1 shadow-[0_0_10px_rgba(251,191,36,0.5)]"></div>
+                <span class="text-[11px] text-amber-400/80 mb-6 font-semibold">MDB BUSBAR 3P 4W 380/220V</span>
+
+                <!-- Branch Feeders Grid -->
+                <div id="sldBranches" class="flex flex-wrap justify-center gap-6 w-full">
+                    <!-- Dynamic Branches -->
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- JavaScript Logic -->
     <script>
-        // Data standard lookups
         const TRANSFORMER_SIZES = [50, 100, 160, 250, 315, 400, 500, 630, 800, 1000, 1250, 1500, 2000, 2500];
         
         // Initial Mock Data
@@ -206,12 +254,12 @@
             // Transformer Selection
             const recommendedTX = TRANSFORMER_SIZES.find(size => size >= designKVA) || TRANSFORMER_SIZES[TRANSFORMER_SIZES.length - 1];
 
-            // Calculate Main Current (Amp) @ 400V 3-Phase
-            // I = kVA * 1000 / (sqrt(3) * 400)
-            const fullLoadAmp = (recommendedTX * 1000) / (Math.sqrt(3) * 400);
-            const mainCBRating = Math.ceil(fullLoadAmp * 1.25 / 50) * 50; // Rounded up for CB Standard
+            // Calculate Main Current (Amp) @ 380V 3-Phase
+            // I = kVA * 1000 / (sqrt(3) * 380)
+            const fullLoadAmp = (recommendedTX * 1000) / (Math.sqrt(3) * 380);
+            const mainCBRating = Math.ceil(fullLoadAmp * 1.25 / 50) * 50;
 
-            // Cable Estimation Logic (Simplified EIT Rule)
+            // Cable Estimation Logic (EIT Rule)
             let cableText = "";
             let groundText = "";
             if (mainCBRating <= 250) {
@@ -231,7 +279,7 @@
                 groundText = "1x 120 sq.mm.";
             }
 
-            // Update UI
+            // Update UI Totals
             document.getElementById('totalConnectedKW').innerText = totalConnectedKW.toFixed(2) + ' kW';
             document.getElementById('totalDemandKW').innerText = totalDemandKW.toFixed(2) + ' kW';
             document.getElementById('totalDemandKVA').innerText = totalDemandKVA.toFixed(2) + ' kVA';
@@ -240,12 +288,37 @@
             document.getElementById('mainCB').innerText = `${mainCBRating} A (FLA: ${fullLoadAmp.toFixed(1)}A)`;
             document.getElementById('cableSize').innerText = cableText;
             document.getElementById('groundSize').innerText = groundText;
+
+            // Update SLD View
+            document.getElementById('sldTx').innerText = recommendedTX + ' kVA';
+            document.getElementById('sldMainCB').innerText = mainCBRating + ' A CB';
+            document.getElementById('sldMainCable').innerText = cableText;
+
+            // Render SLD Branches
+            const sldBranchesContainer = document.getElementById('sldBranches');
+            sldBranchesContainer.innerHTML = '';
+            
+            loads.forEach((item) => {
+                // Calculate Branch Current @ 380V
+                const branchAmp = (item.kw * 1000) / (Math.sqrt(3) * 380 * (item.pf || 0.85) * ((item.eff || 100)/100));
+                const feederCB = Math.ceil(branchAmp * 1.25 / 10) * 10 || 15;
+                
+                const branchDiv = document.createElement('div');
+                branchDiv.className = 'flex flex-col items-center bg-slate-900 border border-slate-700/80 p-3 rounded-lg min-w-[140px] text-center';
+                branchDiv.innerHTML = `
+                    <div class="w-0.5 h-4 bg-amber-400"></div>
+                    <div class="border border-slate-600 bg-slate-800 px-2 py-1 rounded text-[11px] font-mono font-bold text-amber-300 w-full">
+                        ${feederCB} A CB
+                    </div>
+                    <div class="w-0.5 h-4 bg-slate-500"></div>
+                    <span class="text-xs font-semibold text-slate-200 truncate max-w-[120px]">${item.name}</span>
+                    <span class="text-[10px] text-slate-400 font-mono">${item.kw} kW (${branchAmp.toFixed(1)}A)</span>
+                `;
+                sldBranchesContainer.appendChild(branchDiv);
+            });
         }
 
-        // Event Listener for Expansion Factor Input
         document.getElementById('expansionFactor').addEventListener('input', calculate);
-
-        // First Render
         renderRows();
     </script>
 </body>
