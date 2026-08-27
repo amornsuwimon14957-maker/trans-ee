@@ -229,12 +229,12 @@
                 </div>
                 <div class="p-3 bg-slate-900/60 rounded-lg border border-slate-700/50 space-y-1">
                     <span class="text-xs text-slate-400 block">ขนาดสายไฟย่อย (Branch Feeder Cable):</span>
-                    <span id="modalCable" class="font-mono text-emerald-400 font-bold block text-base">--</span>
-                    <span class="text-[11px] text-slate-500">เดินในท่อร้อยสาย (Conduit/Tray - NYY/CV Cable)</span>
+                    <span id="modalCable" class="font-mono text-emerald-400 font-bold block text-sm">--</span>
+                    <span class="text-[11px] text-slate-500">เดินในท่อร้อยสาย/รางเคเบิล (Conduit/Tray - NYY/CV Cable)</span>
                 </div>
                 <div class="p-3 bg-slate-900/60 rounded-lg border border-slate-700/50 space-y-1">
                     <span class="text-xs text-slate-400 block">ขนาดสายดินวงจรย่อย (Branch Ground Cable):</span>
-                    <span id="modalGround" class="font-mono text-emerald-400 font-bold block text-base">--</span>
+                    <span id="modalGround" class="font-mono text-emerald-400 font-bold block text-sm">--</span>
                 </div>
             </div>
 
@@ -252,7 +252,8 @@
         let loads = [
             { id: 1, name: 'Motor Production Line 1', kw: 75, pf: 0.85, eff: 90, df: 80 },
             { id: 2, name: 'HVAC Air Chiller', kw: 45, pf: 0.88, eff: 92, df: 90 },
-            { id: 3, name: 'Factory Lighting & Outlet', kw: 20, pf: 0.95, eff: 100, df: 100 }
+            { id: 3, name: 'Factory Lighting & Outlet', kw: 20, pf: 0.95, eff: 100, df: 100 },
+            { id: 4, name: 'Crane', kw: 100, pf: 0.85, eff: 90, df: 100 }
         ];
 
         function renderRows() {
@@ -291,19 +292,25 @@
             calculate();
         }
 
-        // Branch Feeder Cable Sizing Lookup Function
+        // Branch Feeder Cable Sizing Lookup Function (มีแนะนำสายเบิ้ลเมื่อกระแสสูง)
         function getBranchCableSpec(cbAmp) {
-            if (cbAmp <= 20) return { cable: "4x 2.5 sq.mm. CV", ground: "1x 2.5 sq.mm." };
-            if (cbAmp <= 32) return { cable: "4x 6 sq.mm. CV", ground: "1x 4 sq.mm." };
-            if (cbAmp <= 50) return { cable: "4x 10 sq.mm. CV", ground: "1x 6 sq.mm." };
-            if (cbAmp <= 63) return { cable: "4x 16 sq.mm. CV", ground: "1x 6 sq.mm." };
+            if (cbAmp <= 20)  return { cable: "4x 2.5 sq.mm. CV", ground: "1x 2.5 sq.mm." };
+            if (cbAmp <= 32)  return { cable: "4x 6 sq.mm. CV", ground: "1x 4 sq.mm." };
+            if (cbAmp <= 50)  return { cable: "4x 10 sq.mm. CV", ground: "1x 6 sq.mm." };
+            if (cbAmp <= 63)  return { cable: "4x 16 sq.mm. CV", ground: "1x 6 sq.mm." };
             if (cbAmp <= 100) return { cable: "4x 35 sq.mm. CV", ground: "1x 10 sq.mm." };
             if (cbAmp <= 125) return { cable: "4x 50 sq.mm. CV", ground: "1x 16 sq.mm." };
             if (cbAmp <= 160) return { cable: "4x 70 sq.mm. CV", ground: "1x 16 sq.mm." };
-            if (cbAmp <= 200) return { cable: "4x 95 sq.mm. CV", ground: "1x 25 sq.mm." };
-            if (cbAmp <= 250) return { cable: "4x 120 sq.mm. CV", ground: "1x 35 sq.mm." };
-            if (cbAmp <= 400) return { cable: "4x 240 sq.mm. CV", ground: "1x 50 sq.mm." };
-            return { cable: "2x (4x 185 sq.mm.) CV", ground: "1x 70 sq.mm." };
+            
+            // ตั้งแต่ 200A ขึ้นไป เพิ่มทางเลือกสายขนาน (สายเบิ้ล)
+            if (cbAmp <= 200) return { cable: "4x 95 sq.mm. CV หรือ 2x (4x 35 sq.mm.) [เบิ้ลสาย]", ground: "1x 25 sq.mm." };
+            if (cbAmp <= 250) return { cable: "4x 120 sq.mm. CV หรือ 2x (4x 50 sq.mm.) [เบิ้ลสาย]", ground: "1x 35 sq.mm." };
+            if (cbAmp <= 300) return { cable: "4x 185 sq.mm. CV หรือ 2x (4x 70 sq.mm.) [เบิ้ลสาย]", ground: "1x 35 sq.mm." };
+            if (cbAmp <= 400) return { cable: "4x 240 sq.mm. CV หรือ 2x (4x 95 sq.mm.) [เบิ้ลสาย]", ground: "1x 50 sq.mm." };
+            if (cbAmp <= 500) return { cable: "2x (4x 120 sq.mm.) CV [ขนานสาย]", ground: "1x 50 sq.mm." };
+            if (cbAmp <= 630) return { cable: "2x (4x 185 sq.mm.) CV [ขนานสาย]", ground: "1x 70 sq.mm." };
+            
+            return { cable: "3x (4x 185 sq.mm.) CV [ขนานสาย]", ground: "1x 95 sq.mm." };
         }
 
         // Busbar Sizing Lookup Function
@@ -392,7 +399,7 @@
             const sldBranchesContainer = document.getElementById('sldBranches');
             sldBranchesContainer.innerHTML = '';
             
-            loads.forEach((item, index) => {
+            loads.forEach((item) => {
                 const branchAmp = (item.kw * 1000) / (Math.sqrt(3) * 380 * (item.pf || 0.85) * ((item.eff || 100)/100));
                 const feederCB = Math.ceil(branchAmp * 1.25 / 10) * 10 || 15;
                 const spec = getBranchCableSpec(feederCB);
